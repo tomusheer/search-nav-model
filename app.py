@@ -1,66 +1,32 @@
 import streamlit as st
-st.cache_data.clear()
-
 from predict_knn import predict
 
-st.set_page_config(page_title="JoyBuy Search Navigation Demo", layout="centered")
+st.set_page_config(page_title="Search Debug App", layout="centered")
 
-MODE_LABELS = {
-    "exact": "In-house ML recommendation",
-    "semantic": "In-house ML recommendation",
-    "perplexity": "Gen AI recommendation",
-    "related": "Related suggestions",
-    "no_match": "No strong match found",
-}
-
-st.markdown("""
-<style>
-.reco-list {
-    margin-top: 0.25rem;
-    padding-left: 1.2rem;
-}
-.reco-list li {
-    margin-bottom: 0.2rem;
-    line-height: 1.2;
-}
-.small-label {
-    color: #666;
-    font-size: 0.95rem;
-    margin-bottom: 0.25rem;
-}
-</style>
-""", unsafe_allow_html=True)
-
-st.title("JoyBuy Search Navigation Demo")
-st.caption("Try a search query to see recommended Search Tiles for your Keyword.")
-
-sample_queries = [
-    "lego", "coffee", "rice", "iphone",
-    "air fryer", "pokemon", "nintendo switch", "washing machine"
-]
-
-cols = st.columns(4)
-for i, q in enumerate(sample_queries):
-    if cols[i % 4].button(q):
-        st.session_state["query"] = q
+st.title("Search Debug App")
 
 if "query" not in st.session_state:
     st.session_state["query"] = ""
 
-query = st.text_input("Search query", key="query")
+query = st.text_input("Query", key="query")
 
-if st.button("Generate recommendations"):
+if st.button("Run prediction"):
     recs, score, mode = predict(query)
-    st.write({"query": query, "mode": mode, "score": score, "recs": recs})
 
-    mode_label = MODE_LABELS.get(mode, mode)
+    st.subheader("Debug")
+    st.json({
+        "query": query,
+        "mode": mode,
+        "score": float(score) if score is not None else None,
+        "recs": recs
+    })
 
-    st.markdown(f"**Source:** {mode_label}")
-    st.markdown(f"**Confidence:** {score:.2f}")
+    st.subheader("Result")
+    st.write(f"Source: {mode}")
+    st.write(f"Confidence: {score:.2f}" if score is not None else "Confidence: N/A")
 
     if recs:
-        st.markdown('<div class="small-label">Recommended options</div>', unsafe_allow_html=True)
-        items = "".join([f"<li>{r}</li>" for r in recs])
-        st.markdown(f'<ul class="reco-list">{items}</ul>', unsafe_allow_html=True)
+        for i, rec in enumerate(recs, 1):
+            st.write(f"{i}. {rec}")
     else:
-        st.warning("Couldn't find that exact item right now.")
+        st.warning("No recommendations returned")
