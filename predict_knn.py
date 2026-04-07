@@ -53,11 +53,9 @@ ALIASES = {
 }
 
 def normalize_query(text: str) -> str:
-    text = str(text).lower().strip()
-    text = unicodedata.normalize("NFKD", text)
-    text = text.encode("ascii", "ignore").decode("utf-8")
+    text = str(text).strip().lower()
+    text = unicodedata.normalize("NFKC", text)
     text = re.sub(r"[-_/]", " ", text)
-    text = re.sub(r"[^a-z0-9\s]", "", text)
     text = re.sub(r"\s+", " ", text).strip()
     return ALIASES.get(text, text)
 
@@ -90,7 +88,7 @@ df["Query_normalized"] = df["Query"].apply(normalize_query)
 
 char_vectorizer = TfidfVectorizer(
     analyzer="char_wb",
-    ngram_range=(3, 5),
+    ngram_range=(2, 4),
     lowercase=False,
     preprocessor=normalize_query
 )
@@ -135,32 +133,59 @@ def is_valid_recommendation(text):
         return False
     return True
 
+def detect_query_language_hint(query: str) -> str:
+    import re
+    q = str(query)
+
+    if re.search(r"[\u4e00-\u9fff]", q):  # Chinese characters
+        return "Chinese"
+    if re.search(r"[äöüßÄÖÜ]", q):         # German umlauts
+        return "German"
+    if re.search(r"[àáâäãåèéêëìíîïòóôöøùúûüÿçñ]", q):  # French accented chars
+        return "French"
+    if re.search(r"[àáâäãåèéêëìíîïòóôöøùúûüÿ]", q):   # Dutch accented chars
+        return "Dutch"
+    return "English or same as user query"
+
 
 def get_perplexity_suggestions(query):
     api_key = os.getenv("PERPLEXITY_API_KEY")
     if not api_key:
         return [], "no_api_key"
 
-    prompt = f"""
-You are a JoyBuy UK shopping assistant.
+    language_hint = detect_query_language_hint(query)
+
+    prompt = f"""You are a JoyBuy EU shopping assistant who responds in the shopper's query language.
+
+MANDATORY: All suggestions must be in {language_hint} exactly.
 
 User query: "{query}"
+Preferred output language: {language_hint}
 
 Task:
 Infer what the shopper is likely looking for and generate up to 4 useful narrower shopping suggestions.
 
 Rules:
+- Return suggestions in the same language as the user query when possible
+- Preserve brand names and globally recognized product names such as iPhone, Nike, Sony, IKEA unless a standard local-language form is clearly more common
+- Localize generic product/category words where applicable
 - Suggestions must be shopping/product/category labels only
 - Each suggestion must be 1 to 4 words
 - No explanation
 - No numbering
 - No full sentences
 - Prefer sensible product subtypes or shopping groupings
-- For example:
-  - "cap" -> ["Baseball Caps", "Beanies", "Snapback Caps", "Men's Hats"]
-  - "headphone" -> ["Wireless Headphones", "Gaming Headsets", "Bluetooth Headphones", "Earbuds"]
-  - "soup" -> ["Tomato Soup", "Chicken Soup", "Instant Soup", "Vegetable Soup"]
 - If the query is clearly nonsense or too ambiguous, return an empty list
+
+Examples:
+- "cap" -> ["Baseball Caps", "Beanies", "Snapback Caps", "Men's Hats"]
+- "headphone" -> ["Wireless Headphones", "Gaming Headsets", "Bluetooth Headphones", "Earbuds"]
+- "soup" -> ["Tomato Soup", "Chicken Soup", "Instant Soup", "Vegetable Soup"]
+- "苹果" -> ["苹果手机", "苹果充电器", "苹果配件", "苹果耳机"]
+- "kopfhörer" -> ["Bluetooth Kopfhörer", "Gaming Kopfhörer", "In-Ear Kopfhörer", "Kabellose Kopfhörer"]
+- "casque" -> ["Casque Bluetooth", "Casque Gaming", "Écouteurs Sans Fil", "Casque Intra-Aurulaire"]
+- "koffie" -> ["Koffiebonen", "Koffiecapsules", "Espresso Koffie", "Filterkoffie"]
+- "iphone" -> ["iPhone 15", "iPhone Case", "iPhone Charger", "iPhone Accessories"]
 
 Return JSON only:
 {{
@@ -215,7 +240,6 @@ Return JSON only:
     except Exception as e:
         print(f"Perplexity error: {e}")
         return [], "error"
-
 
 # =========================
 # MAIN PREDICT
