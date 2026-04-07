@@ -12,6 +12,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 
+
+
 # =========================
 # CONFIG
 # =========================
@@ -24,7 +26,12 @@ DEBUG = False
 # =========================
 # LOAD TRAINING DATA
 # =========================
-df = pd.read_csv(TRAINING_FILE, on_bad_lines="skip")
+import streamlit as st  #
+@st.cache_data(ttl=300)  # refresh every 5 min
+def load_training_data():
+    return pd.read_csv(TRAINING_FILE, on_bad_lines="skip")
+
+df = load_training_data()
 
 df["Query"] = df["Query"].astype(str).str.strip()
 df = df[df["Query"].notna() & (df["Query"] != "") & (df["Query"].str.lower() != "nan")]
