@@ -155,9 +155,8 @@ def get_perplexity_suggestions(query):
 
     language_hint = detect_query_language_hint(query)
 
-    prompt = f"""You are a JoyBuy EU shopping assistant who responds in the shopper's query language.
-
-MANDATORY: All suggestions must be in {language_hint} exactly.
+    prompt = f"""
+You are a JoyBuy shopping assistant.
 
 User query: "{query}"
 Preferred output language: {language_hint}
@@ -167,25 +166,24 @@ Infer what the shopper is likely looking for and generate up to 4 useful narrowe
 
 Rules:
 - Return suggestions in the same language as the user query when possible
-- Preserve brand names and globally recognized product names such as iPhone, Nike, Sony, IKEA unless a standard local-language form is clearly more common
-- Localize generic product/category words where applicable
 - Suggestions must be shopping/product/category labels only
 - Each suggestion must be 1 to 4 words
 - No explanation
 - No numbering
 - No full sentences
-- Prefer sensible product subtypes or shopping groupings
+- Prefer mainstream e-commerce subtypes or shopping groupings
+- Prefer product types over luxury brands unless the query explicitly names a brand
+- Do not switch to a neighboring product type; for example lipstick should stay lipstick, not lip balm
 - If the query is clearly nonsense or too ambiguous, return an empty list
 
 Examples:
 - "cap" -> ["Baseball Caps", "Beanies", "Snapback Caps", "Men's Hats"]
 - "headphone" -> ["Wireless Headphones", "Gaming Headsets", "Bluetooth Headphones", "Earbuds"]
 - "soup" -> ["Tomato Soup", "Chicken Soup", "Instant Soup", "Vegetable Soup"]
+- "watches" -> ["Smart Watches", "Men's Watches", "Women's Watches", "Sports Watches"]
+- "lip stick" -> ["Matte Lipstick", "Liquid Lipstick", "Long-Wear Lipstick", "Cream Lipstick"]
 - "苹果" -> ["苹果手机", "苹果充电器", "苹果配件", "苹果耳机"]
 - "kopfhörer" -> ["Bluetooth Kopfhörer", "Gaming Kopfhörer", "In-Ear Kopfhörer", "Kabellose Kopfhörer"]
-- "casque" -> ["Casque Bluetooth", "Casque Gaming", "Écouteurs Sans Fil", "Casque Intra-Aurulaire"]
-- "koffie" -> ["Koffiebonen", "Koffiecapsules", "Espresso Koffie", "Filterkoffie"]
-- "iphone" -> ["iPhone 15", "iPhone Case", "iPhone Charger", "iPhone Accessories"]
 
 Return JSON only:
 {{
