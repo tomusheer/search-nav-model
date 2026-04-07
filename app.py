@@ -1,6 +1,6 @@
+import streamlit as st
 st.cache_data.clear()
 
-import streamlit as st
 from predict_knn import predict
 
 st.set_page_config(page_title="JoyBuy Search Navigation Demo", layout="centered")
