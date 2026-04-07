@@ -1,5 +1,4 @@
 Query,Recommendation 1,Recommendation 2,Recommendation 3,Recommendation 4,Recommendation 5
--100(Unknown),,,,,
 汤圆,芝麻汤圆,花生汤圆,大黄米汤圆,桂花汤圆,
 lego,LEGO Star Wars,LEGO Technic,LEGO City,LEGO Creator,
 iphone 17 pro max,256GB,512GB,2TB,Accessories,
@@ -8,8 +7,6 @@ iphone 17 pro max,256GB,512GB,2TB,Accessories,
 饺子,猪肉,牛肉,虾,豆腐 蔬菜,
 rice,Jasmine Rice,Basmati Rice,Long Grain Rice,Brown Rice,
 方便面,方便面,桶装方便面,袋装方便面,牛肉方便面,海鲜方便面
-村驴,,,,,
-toilet roll,2 ply,3 ply,,,
 beef,Ribeye Steak,Ground Beef,Beef Brisket,Beef Slices,
 coffee,Instant Coffee,Coffee Beans,Ground Coffee,Nespresso Pods,
 beer,Lager,Craft Beer,IPA,Alcohol-Free,
@@ -23,7 +20,7 @@ pokemon,Pokemon Cards,Pokemon Figures,Pokemon Plush,Pokemon Games
 空气炸锅,3L空气炸锅,5L空气炸锅,智能空气炸锅,多功能空气炸锅
 老干妈,老干妈豆豉,老干妈辣椒油,老干妈蒜蓉酱,老干妈剁椒
 tv,55 Inch Smart TV,65 Inch OLED TV,4K TV,QLED TV
-air fryer,3L空气炸锅,5L空气炸锅,无油空气炸锅,数字空气炸锅
+air fryer,Compact,Family Size,oil free,Dual zone
 大米,东北大米,五常大米,泰国香米,泰国糯米
 nike shoes,Nike Air Force 1,Nike Dunk Low,Nike React,Nike Running Shoes
 toothpaste,Whitening Toothpaste,Sensitive Toothpaste,Kids Toothpaste,Fluoride Toothpaste
