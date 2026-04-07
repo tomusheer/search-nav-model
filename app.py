@@ -46,6 +46,8 @@ query = st.text_input("Search query", value=st.session_state.get("query", ""))
 
 if st.button("Generate recommendations"):
     recs, score, mode = predict(query)
+    st.write({"query": query, "mode": mode, "score": score, "recs": recs})
+
     mode_label = MODE_LABELS.get(mode, mode)
 
     st.markdown(f"**Source:** {mode_label}")
