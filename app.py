@@ -1,3 +1,5 @@
+st.cache_data.clear()
+
 import streamlit as st
 from predict_knn import predict
 
@@ -42,7 +44,10 @@ for i, q in enumerate(sample_queries):
     if cols[i % 4].button(q):
         st.session_state["query"] = q
 
-query = st.text_input("Search query", value=st.session_state.get("query", ""))
+if "query" not in st.session_state:
+    st.session_state["query"] = ""
+
+query = st.text_input("Search query", key="query")
 
 if st.button("Generate recommendations"):
     recs, score, mode = predict(query)
