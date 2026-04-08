@@ -194,7 +194,7 @@ Return JSON only:
 }}
 """
 
-   try:
+    try:
         response = requests.post(
             "https://api.perplexity.ai/chat/completions",
             headers={
@@ -219,7 +219,7 @@ Return JSON only:
         if DEBUG:
             print("RAW PERPLEXITY:", text)
 
-        match = re.search(r"\\{.*\\}", text, re.DOTALL)
+        match = re.search(r"\{.*\}", text, re.DOTALL)
         if not match:
             return [], "bad_json"
 
@@ -239,6 +239,7 @@ Return JSON only:
     except Exception as e:
         print(f"Perplexity error: {e}")
         return [], "error"
+
 # =========================
 # MAIN PREDICT
 # =========================
