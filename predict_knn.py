@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os
+import os               
 import re
 import sys
 import json
@@ -7,6 +7,7 @@ import unicodedata
 import requests
 import pandas as pd
 import numpy as np
+import streamlit as st
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -26,7 +27,7 @@ DEBUG = False
 # =========================
 # LOAD TRAINING DATA
 # =========================
-import streamlit as st  #
+
 @st.cache_data(ttl=300)  # refresh every 5 min
 def load_training_data():
     return pd.read_csv(TRAINING_FILE, on_bad_lines="skip")
@@ -149,7 +150,7 @@ def detect_query_language_hint(query: str) -> str:
 
 
 def get_perplexity_suggestions(query):
-    api_key = os.getenv("PERPLEXITY_API_KEY")
+    api_key = st.secrets.get("perplexity", {}).get("api_key")
     if not api_key:
         return [], "no_api_key"
 
@@ -193,7 +194,7 @@ Return JSON only:
 }}
 """
 
-    try:
+   try:
         response = requests.post(
             "https://api.perplexity.ai/chat/completions",
             headers={
@@ -218,7 +219,7 @@ Return JSON only:
         if DEBUG:
             print("RAW PERPLEXITY:", text)
 
-        match = re.search(r"\{.*\}", text, re.DOTALL)
+        match = re.search(r"\\{.*\\}", text, re.DOTALL)
         if not match:
             return [], "bad_json"
 
@@ -238,7 +239,6 @@ Return JSON only:
     except Exception as e:
         print(f"Perplexity error: {e}")
         return [], "error"
-
 # =========================
 # MAIN PREDICT
 # =========================
