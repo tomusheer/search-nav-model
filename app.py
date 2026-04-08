@@ -42,7 +42,7 @@ st.caption("Try a customer search query to see recommended Search Tiles.")
 sample_queries = [
    "lego", "coffee", "苹果", "kopfhörer",
     "air fryer", "rouge à lèvres", "wasmachine", "咖啡",
-    "nintendo switch", "riz"
+    "riz"
 ]
 
 cols = st.columns(4)
