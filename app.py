@@ -40,8 +40,9 @@ st.title("JoyBuy Search Navigation Demo")
 st.caption("Try a customer search query to see recommended Search Tiles.")
 
 sample_queries = [
-    "lego", "coffee", "rice", "iphone",
-    "air fryer", "pokemon", "nintendo switch", "washing machine"
+   "lego", "coffee", "苹果", "kopfhörer",
+    "air fryer", "rouge à lèvres", "wasmachine", "咖啡",
+    "nintendo switch", "riz", "smartwatch", "汤"
 ]
 
 cols = st.columns(4)
